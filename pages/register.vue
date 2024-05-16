@@ -34,6 +34,9 @@
     </div>
 </template>
 <script setup>
+definePageMeta({
+    middleware: ["guest"]
+})
 const name = ref('')
 const email = ref('')
 const password = ref('')
@@ -58,6 +61,9 @@ async function register() {
                 password_confirmation: passwordConfirm.value
             }
         });
+        const user = await useNuxtApp().$apiFetch('/api/user')
+        const {setUser} = useAuth()
+        setUser(user.name)
         window.location.pathname = '/profile'
     } catch (error) {
         isLoading.value = false

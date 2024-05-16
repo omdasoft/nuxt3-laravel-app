@@ -13,7 +13,7 @@
             </div>
             <div>
                 <label for="password" class="block font-semibold">password</label>
-                <input type="password" v-model="password" id="email" class="w-full px-2 py-2 rounded shadow mt-2">
+                <input type="password" v-model="password" id="password" class="w-full px-2 py-2 rounded shadow mt-2">
             </div>
             <div>
                 <button type="submit" class="inline-block bg-blue-600 hover:bg-blue-700 text-white rounded py-2 px-2">
@@ -25,6 +25,9 @@
     </div>
 </template>
 <script setup>
+definePageMeta({
+    middleware: ["guest"]
+})
 const email = ref('')
 const password = ref('')
 const isLoading = ref(false)
@@ -45,6 +48,11 @@ async function login() {
                 password: password.value
             }
         });
+
+        const user = await useNuxtApp().$apiFetch('/api/user')
+        const {setUser} = useAuth()
+        setUser(user.name)
+        // navigateTo('/profile')
         window.location.pathname = '/profile'
     } catch (error) {
         isLoading.value = false

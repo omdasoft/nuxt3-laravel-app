@@ -7,32 +7,37 @@
                     <NuxtLink to="/">Logo</NuxtLink>
                 </div>
                 <div>
-                    <ul class="flex space-x-12">
-                        <li>
-                            <NuxtLink to="/">Home</NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink to="/create">Create</NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink to="/login">Login</NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink to="/register">Register</NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink to="/profile">Profile</NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink to="/about">About</NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink to="/contact">Contact</NuxtLink>
-                        </li>
-                        <li>
-                            <button @click="logout">Logout</button>
-                        </li>
-                    </ul>
+                    <ClientOnly>
+                        <ul class="flex space-x-12">
+                            <li>
+                                <NuxtLink to="/">Home</NuxtLink>
+                            </li>
+                            <li v-if="isLoggedIn">
+                                <NuxtLink to="/create">Create</NuxtLink>
+                            </li>
+                            <li v-if="!isLoggedIn">
+                                <NuxtLink to="/login">Login</NuxtLink>
+                            </li>
+                            <li v-if="!isLoggedIn">
+                                <NuxtLink to="/register">Register</NuxtLink>
+                            </li>
+                            <li v-if="isLoggedIn">
+                                <NuxtLink to="/profile">Profile</NuxtLink>
+                            </li>
+                            <li>
+                                <NuxtLink to="/about">About</NuxtLink>
+                            </li>
+                            <li>
+                                <NuxtLink to="/contact">Contact</NuxtLink>
+                            </li>
+                            <li v-if="isLoggedIn">
+                                <button @click="logout">Logout</button>
+                            </li>
+                            <li v-if="isLoggedIn">
+                                {{ getUser()?.name }}
+                            </li>
+                        </ul>
+                    </ClientOnly>
                 </div>
             </div>
         </nav>
@@ -40,20 +45,23 @@
     </div>
 </template>
 <script setup>
-    const title = useState('title', () => 'Nuxt3 Laravel Blog');
-    const { $apiFetch } = useNuxtApp();
-    async function logout() {
-        try {
-            await $apiFetch('/logout', {
-                method: 'POST'
-            });
-            window.location.pathname = '/'
-        } catch (error) {
-            console.log(error.messege.error);
-        } finally {
-            window.location.pathname = '/'
-        }
+const title = useState('title', () => 'Nuxt3 Laravel Blog');
+const { $apiFetch } = useNuxtApp();
+const { removeUser, isLoggedIn, getUser } = useAuth()
+
+async function logout() {
+    try {
+        await $apiFetch('/logout', {
+            method: 'POST'
+        });
+        window.location.pathname = '/'
+    } catch (error) {
+        console.log(error.messege.error);
+    } finally {
+        removeUser()
+        window.location.pathname = '/'
     }
+}
 </script>
 <style scoped>
 .router-link-active {

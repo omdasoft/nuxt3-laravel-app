@@ -27,6 +27,9 @@
     </div>
 </template>
 <script setup>
+definePageMeta({
+    middleware: ["auth"]
+})
 const title = ref('')
 const body = ref('')
 const isLoading = ref(false)
